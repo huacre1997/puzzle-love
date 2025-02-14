@@ -1,14 +1,18 @@
-/* General styles for the app */
+:root {
+  --amarillo-girasol: #ffcc00;
+  --oro-claro: #ffd700;
+  --naranja-amarillo: #ffa500;
+  --beige-claro: #f5f5dc;
+  --miel-oscura: #d49b38;
+  --verde-oliva-claro: #b5b76b;
+  --cafe-claro: #a67c52;
+  --negro: #000000; /* Color negro para las letras */
+}
 * {
   box-sizing: border-box;
 }
 body,
-html,
 #root {
-  background: linear-gradient(
-    #f8d7e8,
-    #e0bbf2
-  ); /* Gradiente de rosa y lavanda */
   font-family: "Cinzel", serif;
   margin: 0;
   padding: 0;
@@ -17,16 +21,21 @@ html,
   justify-content: center;
   align-items: center;
 }
+html {
+  background: url("/girasoles.png");
+  background-size: cover;
+}
 h1 {
   margin: 0;
 }
 /* Background for the app */
 .app-container {
   text-align: center;
-  height: 100%;
   display: flex;
+  width: 100%;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .app-title {
@@ -46,6 +55,7 @@ h1 {
 
 /* Estilo de la imagen original */
 .original-image-container {
+  padding: 2em;
   grid-column: 1 / 3; /* La imagen original está en la primera columna */
   text-align: center;
 }
@@ -70,11 +80,10 @@ h1 {
   position: relative;
   grid-column: 3/6;
   text-align: center;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: bold;
   text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
   padding: 20px;
-  /* border: 3px dashed #ff5c8a; */
 }
 .original-image {
   width: 400px; /* Aumentamos el tamaño de la imagen */
@@ -86,35 +95,33 @@ h1 {
 /* Cuadrícula 2x2 con secciones fusionadas */
 .game-container {
   display: grid;
-  grid-template-rows: 0.5fr 2fr;
   grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: auto auto;
   width: 100%;
-  max-width: 1200px; /* Aumentamos el tamaño máximo del contenedor */
+  max-width: 1000px;
   margin: 1em;
-  padding: 20px; /* Reducimos el padding */
+  padding: 20px;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 20px;
-  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3); /* Más sombra al contenedor */
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.3);
 }
 
 /* El puzzle ocupa las columnas 2 y 4 fusionadas */
 .puzzle-board-wrapper {
-  grid-column: 1 / 3; /* Ocupa la primera y segunda columna (fusionado con la 4ta) */
-  grid-row: 1 / 2; /* En la primera fila */
+  grid-column: 1 / 3;
+  grid-row: 1;
   display: flex;
   justify-content: center;
   align-items: center;
 }
-
 .board-container {
-  flex: 2;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  padding: 20px; /* Mayor padding */
+  justify-content: center;
+  padding: 20px;
   background: rgba(255, 255, 255, 0.85);
   border-radius: 20px;
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Más sombra */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
   grid-column: 3/6;
 }
 
@@ -123,7 +130,7 @@ h1 {
   position: relative;
   border-radius: 12px;
   background-color: rgba(255, 255, 255, 0.8);
-  border: 3px dashed #ff5c8a;
+  border: 3px dashed var(--naranja-amarillo);
 }
 
 .board-slot > * {
@@ -149,7 +156,7 @@ h1 {
   align-items: center;
   width: 160px; /* Mayor tamaño para las piezas */
   height: 160px;
-  border: 3px solid #ff5c8a;
+  border: 2px solid var(--naranja-amarillo);
   border-radius: 15px;
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Más sombra */
@@ -171,7 +178,7 @@ h1 {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -184,18 +191,23 @@ h1 {
   grid-column: 3/6;
 }
 .overlay h1 {
-  font-size: 3.5em; /* Aumentamos el tamaño del título */
+  font-size: 4em; /* Aumentamos el tamaño del título */
   margin-bottom: 30px;
 }
 
 .overlay p {
-  font-size: 2em; /* Aumentamos el tamaño del texto */
+  width: 50%;
+  font-size: 1.5em; /* Aumentamos el tamaño del texto */
 }
 .board-grid {
-  gap: 5px;
+  gap: 3px;
 }
 /* Responsiveness */
 @media (max-width: 768px) {
+  body,
+  html,
+  #root {
+  }
   .app-container {
     padding: 0;
     align-content: center;
@@ -203,23 +215,28 @@ h1 {
   }
   .game-container {
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1.5fr;
+    grid-template-rows: 1fr 1.5fr 0.3fr;
     padding: 10px; /* Reducimos el padding en dispositivos pequeños */
   }
   .board-container {
     grid-column: 1/2;
   }
+  .btn-dev {
+    grid-column: 1/4;
+  }
   .main-title {
     padding: 20px 20px 0 20px;
-    font-size: 1em;
+    font-size: 0.8em;
   }
   .original-image {
     max-width: 90%; /* Hacemos la imagen más pequeña en dispositivos pequeños */
   }
   .original-image-container {
     grid-column: 2/4;
+    padding: 0;
   }
   .pool-container {
+    align-self: center;
     grid-column: 1 / 2;
   }
 
@@ -256,10 +273,12 @@ h1 {
   .board-grid {
     gap: 1px;
   }
+  .back-button {
+    width: 100%;
+  }
 }
 .back-button {
-  background-color: #ffc0cb; /* Color de fondo rosa claro */
-  color: #fff; /* Texto blanco */
+  background-color: var(--naranja-amarillo); /* Fondo dorado oscuro */
   font-size: 16px; /* Tamaño de texto */
   padding: 10px 20px; /* Espaciado interno */
   border-radius: 25px; /* Bordes redondeados */
@@ -274,7 +293,9 @@ h1 {
 }
 
 .back-button:hover {
-  background-color: #ff69b4; /* Un rosa más fuerte al pasar el mouse */
+  background-color: var(
+    --miel-oscura
+  ); /* Un rosa más fuerte al pasar el mouse */
   transform: scale(1.05); /* Efecto de expansión */
 }
 
@@ -286,61 +307,92 @@ h1 {
   margin-right: 8px; /* Separar el icono de texto */
 }
 /* Centrar el contenedor principal */
+/* Centrar el contenedor principal */
 .image-selector {
   background: rgba(255, 255, 255, 0.8); /* Fondo blanco translúcido */
   border-radius: 15px; /* Bordes redondeados */
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); /* Sombra suave */
-  padding: 40px;
+  padding: 50px; /* Aumentamos el padding para que tenga más espacio interno */
   text-align: center;
-  max-width: 800px;
-  width: 100%;
+  max-width: 1500px; /* Aumentamos el max-width para hacerlo más ancho */
+  max-height: 800px; /* Establecemos un max-height para hacerlo más alto */
+  width: 95%; /* Aumentamos el ancho al 95% */
+  height: auto; /* La altura será automática dependiendo del contenido */
 }
 
 h2 {
   font-size: 32px;
-  color: #ff4d84; /* Rosa suave */
   margin-bottom: 20px;
   font-weight: bold;
   letter-spacing: 1px;
 }
 
 /* Galería de imágenes, centrada con separación */
+/* Galería de imágenes, centrada con separación */
 .image-gallery {
   display: flex;
   justify-content: center;
-  gap: 30px; /* Espacio más amplio entre las imágenes */
-  flex-wrap: wrap; /* Para que las imágenes se ajusten de manera flexible */
-  padding: 10px;
+  gap: 40px; /* Aumentamos el espacio entre las imágenes */
+  padding: 20px; /* Espaciado interno */
+  width: 100%; /* Asegura que el contenedor de la galería ocupe el 100% del ancho disponible */
+  box-sizing: border-box; /* Incluye padding y border en el cálculo del ancho */
+  overflow: hidden; /* Evita que las imágenes se salgan del contenedor */
 }
 
 /* Estilo de cada imagen */
 .image-option {
   cursor: pointer;
   text-align: center;
-  border: 2px solid #ffccd5; /* Borde rosa claro */
-  padding: 10px;
-  border-radius: 10px; /* Bordes redondeados */
+  border: 1px solid grey; /* Borde naranja */
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  width: 200px;
+  padding: 15px; /* Aumentamos el padding */
+  border-radius: 15px; /* Bordes redondeados */
+  width: 230px; /* Aumentamos el tamaño de las opciones de imagen */
   max-width: 100%;
   background: #fff;
+  color: var(--negro); /* Texto negro en las imágenes */
+  box-sizing: border-box; /* Incluye el padding en el tamaño total */
+}
+.completed {
+  border: 3px solid var(--naranja-amarillo); /* Borde naranja */
+}
+.image-option:hover {
+  transform: scale(1.1); /* Aumentamos el tamaño al hacer hover */
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Sombra más profunda */
 }
 
-.image-option:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15); /* Sombra más profunda */
-}
 .image-thumbnail {
   width: 100%;
-  height: auto;
-  border-radius: 8px;
+  height: 200px; /* Aumentamos la altura de la imagen */
+  object-fit: cover; /* Aseguramos que la imagen cubra el espacio sin deformarse */
+  border-radius: 10px;
+  filter: grayscale(100%);
 }
-
+.image-completed {
+  filter: grayscale(0%);
+}
 /* Títulos debajo de cada imagen */
 .image-option p {
   margin-top: 15px;
-  font-size: 18px;
-  color: #ff4d84; /* Rosa suave */
+  font-size: 20px; /* Aumentamos el tamaño del texto */
+  color: var(--negro); /* Texto negro */
   font-weight: 600;
   letter-spacing: 0.5px;
+}
+.image-thumbnail-wrapper {
+  position: relative;
+}
+
+.check-icon {
+  margin-top: 3em;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  z-index: 10;
+  color: grey;
+}
+.check-completed {
+  color: var(--naranja-amarillo);
 }

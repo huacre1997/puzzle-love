@@ -34,6 +34,10 @@ const PuzzlePiece: React.FC<PuzzlePieceProps> = ({ piece, id, style }) => {
             {...listeners}
             {...attributes}
             style={styleWithTransform}
+            variants={{
+                hidden: { scale: 0.5 },
+                visible: { scale: 1 },
+            }}
 
         />
     );
