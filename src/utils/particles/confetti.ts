@@ -34,7 +34,7 @@ const launchConfetti = (launch: boolean) => {
   })();
 };
 
-const shoot = (x, y) => {
+const shoot = (x: number, y: number) => {
   const origin = { x: x / window.innerWidth, y: y / window.innerHeight };
 
   [

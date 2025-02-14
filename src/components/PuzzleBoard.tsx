@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DndContext, DragEndEvent, DragStartEvent, rectIntersection, DragOverlay } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import { generatePuzzlePieces } from "../utils/generatePuzzlePieces";
@@ -14,6 +14,7 @@ import { puzzleSize } from "../data";
 import { Puzzle } from "../types";
 
 const PuzzleBoard: React.FC = () => {
+    const { imageId } = useParams(); // Obtén el parámetro 'id' de la URL
 
     const [activeId, setActiveId] = useState<number | null>(null);
     const matches = useMediaQuery("(max-width: 768px)");
@@ -104,7 +105,7 @@ const PuzzleBoard: React.FC = () => {
         }
 
         if (location.container !== "pool" && location.container !== dropTargetId && newBoardSlots[location.container] === newBoardSlots[dropTargetId]) {
-            newBoardSlots[location.container] = undefined;
+            newBoardSlots[location.container] = null;
         }
 
         // Si la pieza estaba en el pool y se movió a un slot, debemos actualizar el pool.
@@ -144,6 +145,23 @@ const PuzzleBoard: React.FC = () => {
         setActiveId(pieceId);
         console.log(activeId);
     };
+    useEffect(() => {
+        console.log("imageId:", imageId); // Verifica que imageId esté disponible
+        if (imageId) {
+            const puzzle = puzzleSize.find((puzzle) => puzzle.id === parseInt(imageId));
+            if (puzzle) {
+                setSelectedPuzzle(puzzle); // Actualiza el puzzle seleccionado
+            }
+        }
+    }, [imageId, setSelectedPuzzle, navigate]);
+    useEffect(() => {
+        if (imageId) {
+            const puzzle = puzzleSize.find((puzzle) => puzzle.id === parseInt(imageId)); // Encuentra el puzzle con ese id
+            if (puzzle) {
+                setSelectedPuzzle(puzzle); // Actualiza el puzzle seleccionado
+            }
+        }
+    }, [imageId, setSelectedPuzzle, navigate]); // Asegúrate de que se actualice cuando cambie el id
 
     useEffect(() => {
 
