@@ -320,7 +320,7 @@ const PuzzleBoard: React.FC = () => {
                                         borderRadius: "8px",
                                         boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
                                     }}
-                                    animate={{ scale: 1.2, zIndex: 99999 }}
+                                    animate={{ scale: matches ? 0.75 : 1.2, zIndex: 99999 }}
                                     transition={{ duration: 0.2, ease: "easeOut" }}
                                 />
                             ) : null;
