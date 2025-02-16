@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DndContext, DragEndEvent, DragStartEvent, rectIntersection, DragOverlay } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import { generatePuzzlePieces } from "../utils/generatePuzzlePieces";
@@ -14,13 +14,14 @@ import { puzzleSize } from "../data";
 import { Puzzle } from "../types";
 
 const PuzzleBoard: React.FC = () => {
+    const { imageId } = useParams(); // Obtener el ID desde la URL
 
     const [activeId, setActiveId] = useState<number | null>(null);
     const matches = useMediaQuery("(max-width: 768px)");
     const navigate = useNavigate();
     const confettiFrameRef = useRef<number | null>(null); // Referencia para la animación del confeti
-    const { selectedPuzzle, updatePuzzles, setSelectedPuzzle } = useStateContext();
-    const { rows, cols, total } = puzzleSize.find((puzzle) => puzzle.id === selectedPuzzle!.id)!;
+    const { selectedPuzzle, updatePuzzles, setSelectedPuzzle, puzzles } = useStateContext();
+    const { rows, cols, total } = puzzleSize.find((puzzle) => puzzle.id === imageId)!;
     const [completed, setCompleted] = useState(false)
     const launchConfetti = (launch: boolean) => {
         const colors = ["#FF69B4", "#FFC0CB", "#FF1493", "#ffffff"]; // Colores románticos
@@ -145,28 +146,44 @@ const PuzzleBoard: React.FC = () => {
         console.log(activeId);
     };
 
-
     useEffect(() => {
+        if (!imageId) {
+            navigate("/");
+            return;
+        }
+
+        const puzzle = puzzles.find(p => p.id === imageId);
+        if (!puzzle) {
+            navigate("/");
+            return;
+        }
+
+        setSelectedPuzzle(puzzle);
+    }, [imageId, puzzles, navigate, setSelectedPuzzle]);
+    useEffect(() => {
+        if (!selectedPuzzle) return; // Evitar que se ejecute si es null
 
         const img = new Image();
-        img.src = selectedPuzzle!.src;
+        img.src = selectedPuzzle.src;
         img.onload = () => {
             const pieces = generatePuzzlePieces(img, cols, rows);
-            const random_pieces = (pieces.sort(() => Math.random() - 0.5));
-            if (Object.keys(selectedPuzzle!.boardSlots).length === 0) {
-                setSelectedPuzzle({ ...selectedPuzzle!, pool: random_pieces });
-                updatePuzzles(selectedPuzzle!.id, { ...selectedPuzzle!, pool: random_pieces });
-            }
+            const random_pieces = pieces.sort(() => Math.random() - 0.5);
 
+            if (Object.keys(selectedPuzzle.boardSlots).length === 0) {
+                const updatedPuzzle = { ...selectedPuzzle, pool: random_pieces };
+                setSelectedPuzzle(updatedPuzzle);
+                updatePuzzles(selectedPuzzle.id, updatedPuzzle);
+            }
         };
         img.onerror = (error) => {
-            console.error('Error al cargar la imagen:', error);
+            console.error("Error al cargar la imagen:", error);
         };
+    }, [selectedPuzzle]); // Se ejecuta solo cuando selectedPuzzle ya tiene un valor
 
-    }, []);
     useEffect(() => {
         if (selectedPuzzle?.completed) {
             setCompleted(true);
+            launchConfetti(true)
         }
         if (selectedPuzzle?.pool.length === 0 && Object.keys(selectedPuzzle?.boardSlots).length === total) {
             const isCorrect = Object.keys(selectedPuzzle?.boardSlots).every((key) => {
@@ -192,8 +209,8 @@ const PuzzleBoard: React.FC = () => {
 
     return (
         <DndContext onDragStart={handleDragStart} collisionDetection={rectIntersection} onDragEnd={handleDragEnd}>
-            {matches ? <div className="main-title">
-                <h1>Arma  el rompecabezas mi amorcito</h1>
+            {matches ? <div className="main-title-puzzle">
+                Arma  el rompecabezas mi amorcito
             </div> : <></>}
             <div className="puzzle-wrapper">
                 <div className="game-container">
@@ -210,7 +227,7 @@ const PuzzleBoard: React.FC = () => {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ duration: 1, ease: "easeInOut" }}
                         >
-                            <div className="main-title">
+                            <div className="main-title-puzzle">
                                 <div className="sized">
                                     <h1>Arma el rompecabezas mi amorcito</h1>
                                 </div>
@@ -251,7 +268,7 @@ const PuzzleBoard: React.FC = () => {
                                         key={slotId}
                                         animate="visible"
                                         transition={{
-                                            duration: 1,
+                                            duration: 0.5,
                                             delay: i * 0.1, // Stagger the animation for each piece
                                         }}
                                         variants={{

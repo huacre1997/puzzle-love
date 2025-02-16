@@ -8,31 +8,42 @@
   --cafe-claro: #a67c52;
   --negro: #000000; /* Color negro para las letras */
 }
+
 * {
   box-sizing: border-box;
-}
-body,
-#root {
-  font-family: "Cinzel", serif;
   margin: 0;
   padding: 0;
-  height: 100vh;
+}
+
+body,
+html {
+  font-family: "Cinzel", serif;
+  height: 100%;
+  overflow: hidden; /* Evita el scroll */
+}
+
+#root {
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 html {
-  background: url("/girasoles.png");
+  background: url("/girasoles.png") no-repeat center center fixed;
   background-size: cover;
 }
+
 h1 {
   margin: 0;
 }
+
 /* Background for the app */
 .app-container {
   text-align: center;
   display: flex;
   width: 100%;
+  height: 100%;
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -202,6 +213,7 @@ h1 {
 .board-grid {
   gap: 3px;
 }
+
 /* Responsiveness */
 @media (max-width: 768px) {
   body,
@@ -223,10 +235,6 @@ h1 {
   }
   .btn-dev {
     grid-column: 1/4;
-  }
-  .main-title {
-    padding: 20px 20px 0 20px;
-    font-size: 0.8em;
   }
   .original-image {
     max-width: 90%; /* Hacemos la imagen más pequeña en dispositivos pequeños */
@@ -275,6 +283,38 @@ h1 {
   }
   .back-button {
     width: 100%;
+  }
+  .image-selector {
+    padding: 30px !important;
+    max-width: 380px !important;
+    max-height: 900px !important;
+  }
+  .main-title {
+    padding: 0.5em;
+    font-size: 1.3em;
+  }
+  .sub-title {
+    margin-top: 0;
+    font-size: 1.1rem;
+  }
+  .puzzle-container {
+    padding: 20px;
+  }
+  .check-icon {
+    margin-top: 1em !important;
+  }
+  .main-title-puzzle {
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px;
+  }
+  .overlay h1 {
+    font-size: 3em; /* Aumentamos el tamaño del título */
+    margin-bottom: 20px;
+  }
+  .overlay p {
+    width: 80%;
+    font-size: 1.2em; /* Aumentamos el tamaño del texto */
   }
 }
 .back-button {

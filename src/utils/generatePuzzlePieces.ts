@@ -55,7 +55,7 @@ export const generatePuzzlePieces = (
       );
 
       // Convertimos la pieza a un formato de imagen en base64 (dataURL)
-      const dataUrl = canvas.toDataURL();
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.3); // 0.7 = 70% calidad
 
       // Creamos una pieza con un ID único y los datos de la imagen
       const id = row * cols + col;

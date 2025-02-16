@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { imageDetailsData } from "../data";
 import { Puzzle } from "../types";
 
@@ -15,9 +15,18 @@ const StateContext = createContext<ContextProps | undefined>(undefined);
 export const StateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [selectedPuzzle, setSelectedPuzzle] = useState<Puzzle | null>(null);
 
-    const [puzzles, setPuzzles] = useState<Array<Puzzle>>(imageDetailsData);
+    const [puzzles, setPuzzles] = useState<Array<Puzzle>>(() => {
+        // Intentar recuperar de localStorage, si no existe, usar `imageDetailsData`
+        const savedPuzzles = localStorage.getItem("puzzles");
+        return savedPuzzles ? JSON.parse(savedPuzzles) : imageDetailsData;
+    });
 
+    useEffect(() => {
+        // Guardar en localStorage cada vez que puzzles cambie
+        localStorage.setItem("puzzles", JSON.stringify(puzzles));
+    }, [puzzles]);
     const updatePuzzles = (id: string, newState: Puzzle) => {
+
         setPuzzles(prev => prev.map(p => p.id === id ? { ...p, ...newState } : p));
 
     };
