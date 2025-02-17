@@ -12,6 +12,8 @@ import { shoot } from "../utils/particles/confetti";
 import { useStateContext } from "../context/StateContext";
 import { puzzleSize } from "../data";
 import { Puzzle } from "../types";
+import AnimatedTitle from "./AnimatedTitle";
+import Alert from "./Alert";
 
 const PuzzleBoard: React.FC = () => {
     const { imageId } = useParams(); // Obtener el ID desde la URL
@@ -23,6 +25,10 @@ const PuzzleBoard: React.FC = () => {
     const { selectedPuzzle, updatePuzzles, setSelectedPuzzle, puzzles } = useStateContext();
     const { rows, cols, total } = puzzleSize.find((puzzle) => puzzle.id === imageId)!;
     const [completed, setCompleted] = useState(false)
+    const [alert, setAlert] = useState<string>("");
+
+    // Función para agregar alertas
+
     const launchConfetti = (launch: boolean) => {
         const colors = ["#FF69B4", "#FFC0CB", "#FF1493", "#ffffff"]; // Colores románticos
 
@@ -133,17 +139,90 @@ const PuzzleBoard: React.FC = () => {
 
             const originX = rect.left + (rect.width * 0.5);  // Centro horizontal
             const originY = rect.top + (rect.height * 0.5);  // Centro vertical
-            shoot(originX, originY);  // Lanzar confeti
+            const over_id = dropTargetId.replace("slot-", "");
+            if (Number(over_id) == Number(pieceId)) {
+                const randomMessages = [
+                    "¡Lo lograste, bien hecho!",
+                    "¡Increíble, sigue así!",
+                    "¡Excelente trabajo!",
+                    "¡Vas muy bien, sigue completando!",
+                    "¡Muy bien, no pares ahora!",
+                    "¡Estás haciendo un gran trabajo!",
+                    "¡Sigue así, casi lo tienes!"
+                ];
+
+                // Seleccionar un mensaje aleatorio
+                const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
+
+                // Mostrar la alerta
+                setAlert(randomMessage);
+                shoot(originX, originY);  // Lanzar confeti
+            }
         }
 
         setActiveId(null);  // Reseteamos el ID activo
     };
+    const getClue = () => {
+        if (selectedPuzzle?.clues === 0) return;
+        const random_piece = selectedPuzzle!.pool.slice().sort(() => Math.random() - 0.5).shift();
+        if (random_piece == undefined) {
+            const keys = Object.keys(selectedPuzzle!.boardSlots);
 
+            // Elegir una clave aleatoria
+            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+
+            // Obtener el valor asociado a esa clave
+            const movingPiece = selectedPuzzle!.boardSlots[randomKey];
+            const newBoardSlots = { ...selectedPuzzle!.boardSlots };
+            const dropTargetId = `slot-${movingPiece!.id}`;
+            const targetPiece = selectedPuzzle!.boardSlots[dropTargetId];
+            if (targetPiece) {
+                newBoardSlots[dropTargetId] = movingPiece;
+                newBoardSlots[randomKey] = targetPiece;
+                const updatedPuzzle: Puzzle = {
+                    ...selectedPuzzle!,
+                    boardSlots: newBoardSlots,
+                    clues: selectedPuzzle!.clues - 1
+                };
+                setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
+                updatePuzzles(selectedPuzzle!.id, updatedPuzzle);
+            }
+        }
+        const updatedPool = selectedPuzzle!.pool.filter((p) => p.id !== random_piece?.id); // Eliminar la pieza del pool si estaba allí
+        const dropTargetId = `slot-${random_piece!.id}`;
+        const movingPiece = selectedPuzzle!.pool.find((p) => p.id === random_piece!.id);
+
+        if (!movingPiece) return;
+
+        const targetPiece = selectedPuzzle!.boardSlots[dropTargetId];
+        const newBoardSlots = { ...selectedPuzzle!.boardSlots };
+        if (targetPiece) {
+            updatedPool.push(targetPiece);
+            newBoardSlots[dropTargetId] = movingPiece;
+        } else {
+            newBoardSlots[dropTargetId] = movingPiece;
+        }
+        const updatedPuzzle: Puzzle = {
+            ...selectedPuzzle!,
+            boardSlots: newBoardSlots,
+            pool: updatedPool,
+            clues: selectedPuzzle!.clues - 1
+        };
+        setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
+        updatePuzzles(selectedPuzzle!.id, updatedPuzzle);
+    }
 
     const handleDragStart = (event: DragStartEvent) => {
+        const { active } = event;
+        if (!active) return;  // Si no hay un destino, no hacer nada.
+
         const pieceId = Number(event.active.id);
+        const selectedPiece = selectedPuzzle?.boardSlots[`slot-${pieceId}`];
         setActiveId(pieceId);
-        console.log(activeId);
+        if (pieceId == selectedPiece?.id) {
+            return;
+        }
+
     };
 
     useEffect(() => {
@@ -178,7 +257,7 @@ const PuzzleBoard: React.FC = () => {
         img.onerror = (error) => {
             console.error("Error al cargar la imagen:", error);
         };
-    }, [selectedPuzzle]); // Se ejecuta solo cuando selectedPuzzle ya tiene un valor
+    }, []); // Se ejecuta solo cuando selectedPuzzle ya tiene un valor
 
     useEffect(() => {
         if (selectedPuzzle?.completed) {
@@ -209,17 +288,11 @@ const PuzzleBoard: React.FC = () => {
 
     return (
         <DndContext onDragStart={handleDragStart} collisionDetection={rectIntersection} onDragEnd={handleDragEnd}>
-            {matches ? <div className="main-title-puzzle">
-                Arma  el rompecabezas mi amorcito
-            </div> : <></>}
+            {matches && <h1 className="main-title">Arma el rompecabezas mi amorcito</h1>}
             <div className="puzzle-wrapper">
                 <div className="game-container">
-                    <motion.div initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1, ease: "easeInOut" }} className="pool-container">
-                        <h3 className="original-title">Piezas</h3>
-                        <Pool pool={selectedPuzzle?.pool} />
-                    </motion.div>
+                    {matches && <motion.button className="button-clue" onClick={getClue} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}><img src="../clues.png" /><p>Pista</p><p>({selectedPuzzle?.clues} restantes)</p></motion.button>
+                    }
                     {!matches && (
                         <motion.div
                             className="main-box"
@@ -229,7 +302,7 @@ const PuzzleBoard: React.FC = () => {
                         >
                             <div className="main-title-puzzle">
                                 <div className="sized">
-                                    <h1>Arma el rompecabezas mi amorcito</h1>
+                                    <AnimatedTitle />
                                 </div>
                                 <img
                                     src="/destello.png"
@@ -239,14 +312,33 @@ const PuzzleBoard: React.FC = () => {
                             </div>
                         </motion.div>
                     )}
+
+
                     <motion.div initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1, ease: "easeInOut" }}
                         className="original-image-container">
-                        <h3 className="original-title">Imagen Original</h3>
-                        <img src={selectedPuzzle?.src} alt="Imagen original" className="original-image" />
+                        <motion.div initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ duration: 1, ease: "easeInOut" }} className="pool-container">
+                            <h3 className="original-title">Piezas</h3>
+                            <Pool pool={selectedPuzzle?.pool} />
+                        </motion.div>
+                        {!matches && (
+                            <motion.button
+                                className="button-clue"
+                                onClick={getClue}
+                                whileTap={{ scale: 0.9, transition: { duration: 0 } }}
+                                whileHover={{ scale: 1.1, transition: { duration: 0 } }} // Hover instantáneo
+                            >
+                                <img src="../clues.png" />
+                                <p>Pista</p>
+                                <p>({selectedPuzzle?.clues} restantes)</p>
+                            </motion.button>
+                        )}
                         {matches ? <></> : <> <div style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
-                            <button className="back-button" onClick={() => navigate("/")}>⬅ Volver</button>
+                            <motion.button whileTap={{ scale: 0.9, transition: { duration: 0 } }}
+                                whileHover={{ scale: 1.1, transition: { duration: 0.2 } }} className="back-button" onClick={() => navigate("/")}>⬅ Volver</motion.button>
                         </div></>}
 
                     </motion.div>
@@ -258,7 +350,6 @@ const PuzzleBoard: React.FC = () => {
                                 display: "grid",
                                 gridTemplateColumns: `repeat(${cols}, 1fr)`,
                                 gridTemplateRows: `repeat(${rows}, 1fr)`,
-                                width: "80%",
                             }}
                         >
                             {Array.from({ length: cols * rows }, (_, i) => {
@@ -268,8 +359,8 @@ const PuzzleBoard: React.FC = () => {
                                         key={slotId}
                                         animate="visible"
                                         transition={{
-                                            duration: 0.5,
-                                            delay: i * 0.1, // Stagger the animation for each piece
+                                            duration: 0.5, // Duración más corta
+                                            delay: i * 0.02, // Delay ajustado
                                         }}
                                         variants={{
                                             hidden: { opacity: 0, scale: 0.5 },
@@ -291,10 +382,12 @@ const PuzzleBoard: React.FC = () => {
                                 );
                             })}
                         </div>
+
                     </div>
                     {matches ? <motion.div className="btn-dev" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
                         <button className="back-button" onClick={() => navigate("/")}>⬅ Volver</button>
                     </motion.div> : <> </>}
+
                 </div>
 
                 <DragOverlay
@@ -335,13 +428,20 @@ const PuzzleBoard: React.FC = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 1 }}
+                            transition={{ duration: 0.5 }}
                         >
+                            <motion.div className="overlay-image" initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }} // Efecto de latido
+                                transition={{ duration: 1, ease: "easeInOut" }}>
+                                <img className="" src={selectedPuzzle?.src} alt={selectedPuzzle?.title}
+                                />
+                            </motion.div>
+
                             {/* Imagen del corazón con animación de latido infinito */}
                             <motion.img
                                 src="/heart.png" // Asegúrate de que la imagen esté en la ruta correcta
                                 alt="Corazón latiendo"
-                                style={{ width: "80px", height: "80px", margin: "0 auto" }}
+                                style={{ width: "50px", height: "50px", margin: "0 auto" }}
                                 initial={{ scale: 1 }}
                                 animate={{ scale: [1, 1.2, 1] }} // Efecto de latido
                                 transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
@@ -355,35 +455,47 @@ const PuzzleBoard: React.FC = () => {
                                 ¡Amor, lo armaste!
                             </motion.h1>
 
-                            <p>{selectedPuzzle?.message}</p>
+                            <motion.div initial={{ y: -20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ duration: 2 }} className="overlay-sub">
+                                <p>{selectedPuzzle?.message}</p>
 
-                            {/* Botón para regresar a la pantalla principal */}
+                            </motion.div>
                             <motion.button
                                 onClick={goBack}
-                                style={{
-                                    backgroundColor: "#d49b38", // Un color rosa llamativo
-                                    border: "none",
-                                    padding: "10px 20px",
-                                    borderRadius: "25px",
-                                    fontSize: "16px",
-                                    cursor: "pointer",
-                                    marginTop: "20px",
+                                className="back-button"
+                                initial={{ y: 30, opacity: 0, scale: 0.9 }}
+                                animate={{ y: 0, opacity: 1, scale: 1 }}
+                                transition={{
+                                    duration: 0.6,
+                                    ease: "easeOut",
+                                    type: "spring",
+                                    stiffness: 120,
                                 }}
-                                initial={{ y: 20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ duration: 1 }}
-                                whileHover={{ scale: 1.1 }}
+                                whileHover={{
+                                    scale: 1.12,
+                                    boxShadow: "0px 6px 15px rgba(255, 152, 0, 0.4)", // Efecto de elevación
+                                }}
+                                whileTap={{
+                                    scale: 0.95,
+                                    boxShadow: "0px 2px 6px rgba(255, 152, 0, 0.3)", // Simula presión
+                                }}
                             >
-                                Regresar a la pantalla principal
+                                Regresar
                             </motion.button>
+
                         </motion.div>
                     )}
                 </AnimatePresence>
 
 
-            </div>
 
-        </DndContext>
+            </div>
+            <div style={{ position: 'fixed', top: '0', width: '100%', padding: '20px', display: 'flex', justifyContent: 'center' }}>
+                {alert && <Alert message={alert} />}
+
+            </div>
+        </DndContext >
     );
 };
 

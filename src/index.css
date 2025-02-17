@@ -30,7 +30,8 @@ html {
 }
 
 html {
-  background: url("/girasoles.png") no-repeat center center fixed;
+  background: url("https://ik.imagekit.io/whmaz07lo/sunflowers/bg_sunflowers2.png?updatedAt=1739137327900")
+    no-repeat center center fixed;
   background-size: cover;
 }
 
@@ -66,9 +67,13 @@ h1 {
 
 /* Estilo de la imagen original */
 .original-image-container {
-  padding: 2em;
   grid-column: 1 / 3; /* La imagen original está en la primera columna */
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 }
 
 .original-title {
@@ -81,10 +86,11 @@ h1 {
   top: 30px;
   width: 80%;
   left: 50px;
+  opacity: 0;
 }
 .sized {
   position: relative;
-  z-index: 199;
+  z-index: 99;
 }
 .main-title {
   position: relative;
@@ -196,21 +202,26 @@ h1 {
   color: #fff;
   text-align: center;
   padding: 30px;
+  z-index: 99;
 }
 .main-box {
-  grid-column: 3/6;
+  grid-column: 1/6;
 }
 .overlay h1 {
-  font-size: 4em; /* Aumentamos el tamaño del título */
-  margin-bottom: 30px;
+  color: #ffd700; /* Color dorado */
+  font-size: 2rem;
+  margin-top: 20px;
 }
 
 .overlay p {
-  width: 50%;
-  font-size: 1.5em; /* Aumentamos el tamaño del texto */
+  color: white;
+  font-size: 1.5rem;
+  margin: 10px 0;
+  max-width: 50%;
 }
 .board-grid {
   gap: 3px;
+  width: 100%;
 }
 .main-title-puzzle {
   font-size: 1.3em;
@@ -230,10 +241,11 @@ h1 {
     height: auto;
   }
   .game-container {
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1.5fr 0.3fr;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 0.8fr 1.5fr 0.3fr;
     padding: 10px;
     margin: 0 10px;
+    gap: 5px;
   }
   .board-container {
     grid-column: 1/2;
@@ -247,6 +259,8 @@ h1 {
   .original-image-container {
     grid-column: 2/4;
     padding: 0;
+    height: 200px;
+    align-self: center;
   }
   .pool-container {
     align-self: center;
@@ -279,12 +293,9 @@ h1 {
     grid-column: 1/4;
   }
 
-  .piece-stack {
-    width: 120px; /* Reducimos el tamaño de las piezas */
-    height: 120px;
-  }
   .board-grid {
     gap: 1px;
+    width: 80%;
   }
   .back-button {
     width: 100%;
@@ -316,39 +327,50 @@ h1 {
     padding: 10px;
   }
   .overlay h1 {
-    font-size: 3em; /* Aumentamos el tamaño del título */
+    font-size: 2em; /* Aumentamos el tamaño del título */
     margin-bottom: 20px;
   }
   .overlay p {
-    width: 80%;
-    font-size: 1.2em; /* Aumentamos el tamaño del texto */
+    width: 100%;
+    font-size: 1em;
+    max-width: 80%;
+  }
+  .overlay-sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .button-clue {
+    height: 210px;
+  }
+  .button-clue img {
+    width: 100%;
   }
 }
 .back-button {
-  background-color: var(--naranja-amarillo); /* Fondo dorado oscuro */
-  font-size: 16px; /* Tamaño de texto */
-  padding: 10px 20px; /* Espaciado interno */
-  border-radius: 25px; /* Bordes redondeados */
+  background: linear-gradient(
+    135deg,
+    #ffa500,
+    #ffd700
+  ); /* Degradado más atractivo */
+  font-size: 18px; /* Tamaño de texto más llamativo */
+  padding: 12px 24px; /* Espaciado más equilibrado */
+  border-radius: 30px; /* Bordes más suaves */
   border: none; /* Sin borde */
-  cursor: pointer; /* Cursor de mano al pasar por encima */
-  transition: all 0.3s ease; /* Transición suave */
+  cursor: pointer; /* Cursor de mano */
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   text-transform: uppercase;
+  color: #fff; /* Texto blanco para mejor contraste */
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Sombra sutil */
+  letter-spacing: 1px; /* Espaciado en las letras */
+  outline: none; /* Evita el borde azul por defecto */
+  text-align: center;
 }
 
-.back-button:hover {
-  background-color: var(
-    --miel-oscura
-  ); /* Un rosa más fuerte al pasar el mouse */
-  transform: scale(1.05); /* Efecto de expansión */
-}
-
-.back-button:focus {
-  outline: none; /* Remover contorno de enfoque */
-}
+/* Hover: Efecto de elevación y cambio de color */
 
 .back-button svg {
   margin-right: 8px; /* Separar el icono de texto */
@@ -413,7 +435,7 @@ h2 {
   height: 200px; /* Aumentamos la altura de la imagen */
   object-fit: cover; /* Aseguramos que la imagen cubra el espacio sin deformarse */
   border-radius: 10px;
-  filter: grayscale(100%);
+  filter: grayscale(100%) blur(10px);
 }
 .image-completed {
   filter: grayscale(0%);
@@ -442,4 +464,77 @@ h2 {
 }
 .check-completed {
   color: var(--naranja-amarillo);
+}
+
+.button-clue {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    135deg,
+    #ffa500,
+    #ffd700
+  ); /* Degradado más atractivo */
+  font-size: 18px;
+  width: 100%;
+  max-width: 160px; /* Tamaño más manejable */
+  padding: 1em 30px;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  color: white;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); /* Sombra más profesional */
+  text-align: center;
+}
+.button-clue img {
+  width: 50%;
+}
+.button-clue p {
+  font-size: 0.8em;
+}
+.overlay-image {
+  width: 300px; /* Ancho fijo */
+  height: 300px; /* Altura fija */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Evita que las imágenes más grandes sobresalgan */
+  border-radius: 10px;
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+  margin-bottom: 1em;
+}
+.overlay-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Ajusta la imagen para llenar el contenedor sin deformarse */
+}
+.overlay-sub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.alert {
+  position: fixed;
+
+  transform: translateX(-50%);
+  background: linear-gradient(
+    135deg,
+    #ffa500,
+    #ffd700
+  ); /* Degradado más atractivo */
+  color: black;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+  width: 100%;
 }

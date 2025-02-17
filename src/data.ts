@@ -8,6 +8,7 @@ export const imageDetailsData = [
     completed: false,
     boardSlots: {},
     pool: [],
+    clues: 4,
   },
   {
     id: "image2",
@@ -15,7 +16,7 @@ export const imageDetailsData = [
     title: "Imagen 2",
     boardSlots: {},
     pool: [],
-
+    clues: 5,
     completed: false,
     message:
       "Nuestro amor es la pieza perfecta 💑 Cada pedacito de este rompecabezas me recuerda lo bien que estamos juntos. ¡Te amo con todo mi ser!",
@@ -26,7 +27,7 @@ export const imageDetailsData = [
     pool: [],
     title: "Imagen 3",
     boardSlots: {},
-
+    clues: 5,
     completed: false,
     message:
       "¡Juntos completamos todo! 💕 Sin ti, este rompecabezas estaría incompleto, igual que mi vida sin tu amor. Eres mi persona favorita.",
