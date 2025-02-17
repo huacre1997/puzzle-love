@@ -142,13 +142,19 @@ const PuzzleBoard: React.FC = () => {
             const over_id = dropTargetId.replace("slot-", "");
             if (Number(over_id) == Number(pieceId)) {
                 const randomMessages = [
-                    "¡Lo lograste, bien hecho!",
-                    "¡Increíble, sigue así!",
-                    "¡Excelente trabajo!",
-                    "¡Vas muy bien, sigue completando!",
-                    "¡Muy bien, no pares ahora!",
-                    "¡Estás haciendo un gran trabajo!",
-                    "¡Sigue así, casi lo tienes!"
+                    "¡Cada paso que das me hace amarte más! 💖",
+                    "¡Lo lograste, mi amor, y yo siempre estaré aquí para celebrarlo contigo! 🎉❤️",
+                    "¡Eres increíble, como un sueño del que nunca quiero despertar! 😍✨",
+                    "¡Sigue brillando, mi corazón late más fuerte por cada logro tuyo! 💓🌟",
+                    "¡Tu esfuerzo me inspira, sigamos construyendo nuestro futuro juntos! 🏡💑",
+                    "¡Eres imparable, y yo soy tu fan número uno! 🏆🥰",
+                    "¡Cada meta que alcanzas hace que nuestro amor brille aún más! 💕🌟",
+                    "¡Tú y tus logros son mi mayor orgullo! 💖👏",
+                    "¡Cada victoria tuya es un beso en mi corazón! 😘💞",
+                    "¡Nada me hace más feliz que verte triunfar, mi amor! 🎊💘",
+                    "¡Tú conquistas todo, incluido mi corazón! 💘🏆",
+                    "¡Sigue adelante, amor mío, juntos llegaremos lejos! 🚀❤️",
+                    "¡Tu determinación me enamora cada día más! 💪💖"
                 ];
 
                 // Seleccionar un mensaje aleatorio
@@ -169,12 +175,17 @@ const PuzzleBoard: React.FC = () => {
             const keys = Object.keys(selectedPuzzle!.boardSlots);
 
             // Elegir una clave aleatoria
-            const randomKey = keys[Math.floor(Math.random() * keys.length)];
+            let randomKey = keys[Math.floor(Math.random() * keys.length)];
 
             // Obtener el valor asociado a esa clave
             const movingPiece = selectedPuzzle!.boardSlots[randomKey];
             const newBoardSlots = { ...selectedPuzzle!.boardSlots };
             const dropTargetId = `slot-${movingPiece!.id}`;
+            while (dropTargetId == randomKey) {
+                randomKey = keys[Math.floor(Math.random() * keys.length)];
+
+            }
+
             const targetPiece = selectedPuzzle!.boardSlots[dropTargetId];
             if (targetPiece) {
                 newBoardSlots[dropTargetId] = movingPiece;
@@ -187,6 +198,7 @@ const PuzzleBoard: React.FC = () => {
                 setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
                 updatePuzzles(selectedPuzzle!.id, updatedPuzzle);
             }
+            return
         }
         const updatedPool = selectedPuzzle!.pool.filter((p) => p.id !== random_piece?.id); // Eliminar la pieza del pool si estaba allí
         const dropTargetId = `slot-${random_piece!.id}`;
