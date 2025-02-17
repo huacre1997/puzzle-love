@@ -235,6 +235,10 @@ h1 {
   html,
   #root {
   }
+  .piece-stack {
+    width: 100px; /* Mayor tamaño para las piezas */
+    height: 100px;
+  }
   .app-container {
     padding: 0;
     align-content: center;
@@ -242,7 +246,7 @@ h1 {
   }
   .game-container {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 0.8fr 1.5fr 0.3fr;
+    grid-template-rows: 0.5fr 1.5fr 0.3fr;
     padding: 10px;
     margin: 0 10px;
     gap: 5px;
@@ -259,7 +263,7 @@ h1 {
   .original-image-container {
     grid-column: 2/4;
     padding: 0;
-    height: 200px;
+    height: 150px;
     align-self: center;
   }
   .pool-container {
@@ -341,7 +345,8 @@ h1 {
     justify-content: center;
   }
   .button-clue {
-    height: 210px;
+    height: 160px;
+    padding: 0 !important;
   }
   .button-clue img {
     width: 100%;
@@ -476,7 +481,7 @@ h2 {
   ); /* Degradado más atractivo */
   font-size: 18px;
   width: 100%;
-  max-width: 160px; /* Tamaño más manejable */
+  max-width: 160px;
   padding: 1em 30px;
   border-radius: 12px;
   border: none;
