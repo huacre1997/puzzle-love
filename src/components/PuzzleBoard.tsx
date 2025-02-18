@@ -169,59 +169,46 @@ const PuzzleBoard: React.FC = () => {
         setActiveId(null);  // Reseteamos el ID activo
     };
     const getClue = () => {
-        if (selectedPuzzle?.clues === 0) return;
-        const random_piece = selectedPuzzle!.pool.slice().sort(() => Math.random() - 0.5).shift();
-        if (random_piece == undefined) {
-            const keys = Object.keys(selectedPuzzle!.boardSlots);
+        // if (!selectedPuzzle || selectedPuzzle.clues === 0) return;
+        let updatedPuzzle: Puzzle;
 
-            // Elegir una clave aleatoria
-            let randomKey = keys[Math.floor(Math.random() * keys.length)];
+        const randomPiece = [...selectedPuzzle.pool].sort(() => Math.random() - 0.5).shift();
+        if (randomPiece === undefined) {
+            const keys = Object.keys(selectedPuzzle.boardSlots);
+            let randomKey: string;
+            let movingPiece: PuzzlePieceType | null;
+            let dropTargetId: string;
 
-            // Obtener el valor asociado a esa clave
-            const movingPiece = selectedPuzzle!.boardSlots[randomKey];
-            const newBoardSlots = { ...selectedPuzzle!.boardSlots };
-            const dropTargetId = `slot-${movingPiece!.id}`;
-            while (dropTargetId == randomKey) {
+            do {
                 randomKey = keys[Math.floor(Math.random() * keys.length)];
+                movingPiece = selectedPuzzle.boardSlots[randomKey];
+                dropTargetId = `slot-${movingPiece?.id}`;
+            } while (dropTargetId === randomKey);
 
-            }
+            if (!movingPiece) return;
 
-            const targetPiece = selectedPuzzle!.boardSlots[dropTargetId];
-            if (targetPiece) {
-                newBoardSlots[dropTargetId] = movingPiece;
-                newBoardSlots[randomKey] = targetPiece;
-                const updatedPuzzle: Puzzle = {
-                    ...selectedPuzzle!,
-                    boardSlots: newBoardSlots,
-                    clues: selectedPuzzle!.clues - 1
-                };
-                setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
-                updatePuzzles(selectedPuzzle!.id, updatedPuzzle);
-            }
-            return
-        }
-        const updatedPool = selectedPuzzle!.pool.filter((p) => p.id !== random_piece?.id); // Eliminar la pieza del pool si estaba allí
-        const dropTargetId = `slot-${random_piece!.id}`;
-        const movingPiece = selectedPuzzle!.pool.find((p) => p.id === random_piece!.id);
+            const newBoardSlots = { ...selectedPuzzle.boardSlots };
+            const targetPiece = newBoardSlots[dropTargetId];
 
-        if (!movingPiece) return;
-
-        const targetPiece = selectedPuzzle!.boardSlots[dropTargetId];
-        const newBoardSlots = { ...selectedPuzzle!.boardSlots };
-        if (targetPiece) {
-            updatedPool.push(targetPiece);
             newBoardSlots[dropTargetId] = movingPiece;
+            newBoardSlots[randomKey] = targetPiece;
+
+            updatedPuzzle = { ...selectedPuzzle, boardSlots: newBoardSlots, clues: selectedPuzzle.clues - 1 };
         } else {
-            newBoardSlots[dropTargetId] = movingPiece;
+            // Movemos la pieza del pool al tablero
+            const dropTargetId = `slot-${randomPiece.id}`;
+            const updatedPool = selectedPuzzle.pool.filter((p) => p.id !== randomPiece.id);
+            const newBoardSlots = { ...selectedPuzzle.boardSlots };
+
+            if (newBoardSlots[dropTargetId]) {
+                updatedPool.push(newBoardSlots[dropTargetId]); // Devolvemos la pieza previa al pool
+            }
+            newBoardSlots[dropTargetId] = randomPiece;
+
+            updatedPuzzle = { ...selectedPuzzle, boardSlots: newBoardSlots, pool: updatedPool, clues: selectedPuzzle.clues - 1 };
         }
-        const updatedPuzzle: Puzzle = {
-            ...selectedPuzzle!,
-            boardSlots: newBoardSlots,
-            pool: updatedPool,
-            clues: selectedPuzzle!.clues - 1
-        };
-        setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
-        updatePuzzles(selectedPuzzle!.id, updatedPuzzle);
+        setSelectedPuzzle(updatedPuzzle);
+        updatePuzzles(selectedPuzzle.id, updatedPuzzle);
     }
 
     const handleDragStart = (event: DragStartEvent) => {

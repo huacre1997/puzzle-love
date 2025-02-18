@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, Dispatch, SetStateAction, useContext, useEffect, useState } from "react";
 import { imageDetailsData } from "../data";
 import { Puzzle } from "../types";
 
@@ -6,6 +6,8 @@ import { Puzzle } from "../types";
 interface ContextProps {
     selectedPuzzle: Puzzle | null;
     setSelectedPuzzle: (puzzle: Puzzle | null) => void;
+    init: boolean;
+    setInit: Dispatch<SetStateAction<boolean>>;
     puzzles: Array<Puzzle>,
     updatePuzzles: (id: string, state: Puzzle) => void;
 }
@@ -14,6 +16,7 @@ const StateContext = createContext<ContextProps | undefined>(undefined);
 
 export const StateProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [selectedPuzzle, setSelectedPuzzle] = useState<Puzzle | null>(null);
+    const [init, setInit] = useState(false);
 
     const [puzzles, setPuzzles] = useState<Array<Puzzle>>(() => {
         // Intentar recuperar de localStorage, si no existe, usar `imageDetailsData`
@@ -31,7 +34,9 @@ export const StateProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     };
     return (
-        <StateContext.Provider value={{ selectedPuzzle, setSelectedPuzzle, puzzles, updatePuzzles }}>
+        <StateContext.Provider value={{
+            selectedPuzzle, setSelectedPuzzle, puzzles, updatePuzzles, init, setInit
+        }}>
             {children}
         </StateContext.Provider>
     );

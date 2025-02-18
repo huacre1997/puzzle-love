@@ -14,7 +14,7 @@ const Alert: React.FC<AlertProps> = ({ message }) => {
             setVisible(true);
             const timer = setTimeout(() => {
                 setVisible(false);
-            }, 2000);
+            }, 3000);
             return () => clearTimeout(timer);
         }
     }, [message]);
