@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import PuzzleBoard from "./components/PuzzleBoard";
@@ -18,16 +18,15 @@ const App: React.FC = () => {
             console.log("Motor de partículas inicializado");
         });
     }, []);
-    const particlesLoaded = (container) => {
-        console.log(container);
-    };
+
+
     const { init } = useStateContext();
 
     return (
         <>
             {init &&
                 ReactDOM.createPortal(
-                    <Particles id="tsparticles" particlesLoaded={particlesLoaded} options={options} />,
+                    <Particles id="tsparticles" options={options} />,
                     document.getElementById("particles-container") as HTMLElement
                 )}
             <Router>
