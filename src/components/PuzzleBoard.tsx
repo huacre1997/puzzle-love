@@ -14,6 +14,7 @@ import { puzzleSize } from "../data";
 import { Puzzle } from "../types";
 import AnimatedTitle from "./AnimatedTitle";
 import Alert from "./Alert";
+import CheckToHeart from "./CheckToHeart";
 
 const PuzzleBoard: React.FC = () => {
     const { imageId } = useParams(); // Obtener el ID desde la URL
@@ -169,7 +170,7 @@ const PuzzleBoard: React.FC = () => {
         setActiveId(null);  // Reseteamos el ID activo
     };
     const getClue = () => {
-        // if (!selectedPuzzle || selectedPuzzle.clues === 0) return;
+        if (!selectedPuzzle || selectedPuzzle.clues === 0) return;
         let updatedPuzzle: Puzzle;
 
         const randomPiece = [...selectedPuzzle.pool].sort(() => Math.random() - 0.5).shift();
@@ -486,7 +487,6 @@ const PuzzleBoard: React.FC = () => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-
 
 
             </div>
