@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { DndContext, DragEndEvent, DragStartEvent, rectIntersection, DragOverlay } from "@dnd-kit/core";
+import { DndContext, rectIntersection, DragOverlay } from "@dnd-kit/core";
 import { motion, AnimatePresence } from "framer-motion";
 import { generatePuzzlePieces } from "../utils/generatePuzzlePieces";
-import PuzzlePiece from "./PuzzlePiece";
-import Slot from "./Slot";
 import Pool from "./Pool";
 import { PuzzlePiece as PuzzlePieceType } from "../types";
 import { useMediaQuery } from "usehooks-ts";
@@ -15,171 +13,25 @@ import { Puzzle } from "../types";
 import AnimatedTitle from "./AnimatedTitle";
 import Alert from "./Alert";
 import { restrictToWindowEdges } from "@dnd-kit/modifiers";
+import { useDragAndDrop } from "../hooks/useDragAndDrop";
+import { usePuzzleInitialization } from "../hooks/usePuzzleInitiation";
+import { useConfetti } from "../hooks/useConfetti";
+import PuzzleGrid from "./PuzzleGrid";
 
 const PuzzleBoard: React.FC = () => {
     const { imageId } = useParams(); // Obtener el ID desde la URL
 
-    const [activeId, setActiveId] = useState<number | null>(null);
     const matches = useMediaQuery("(max-width: 768px)");
     const navigate = useNavigate();
-    const confettiFrameRef = useRef<number | null>(null); // Referencia para la animación del confeti
     const { selectedPuzzle, updatePuzzles, setSelectedPuzzle, puzzles } = useStateContext();
     const { rows, cols, total } = puzzleSize.find((puzzle) => puzzle.id === imageId)!;
     const [completed, setCompleted] = useState(false)
     const [alert, setAlert] = useState<string>("");
-
-    // Función para agregar alertas
-
-    const launchConfetti = (launch: boolean) => {
-        const colors = ["#FF69B4", "#FFC0CB", "#FF1493", "#ffffff"]; // Colores románticos
-
-        if (launch) {
-            // Solo lanzamos el confeti si se debe iniciar
-            (function frame() {
-                confetti({
-                    particleCount: 2,
-                    angle: 60,
-                    spread: 55,
-                    origin: { x: 0 },
-                    colors: colors,
-                });
-
-                confetti({
-                    particleCount: 2,
-                    angle: 120,
-                    spread: 55,
-                    origin: { x: 1 },
-                    colors: colors,
-                });
-                confettiFrameRef.current = requestAnimationFrame(frame);
-            })();
-        } else {
-            if (confettiFrameRef.current !== null) {
-                cancelAnimationFrame(confettiFrameRef.current);
-            }
-            confettiFrameRef.current = null;
-        }
-    };
-
-    const goBack = () => {
-        navigate("/");
-        launchConfetti(false);
-        setCompleted(false);
-    };
+    const { launchConfetti } = useConfetti();
+    const { activeId, handleDragEnd, handleDragStart } = useDragAndDrop(selectedPuzzle, setSelectedPuzzle, updatePuzzles, total, setAlert);
+    usePuzzleInitialization(selectedPuzzle, setSelectedPuzzle, updatePuzzles, cols, rows);
 
 
-    const findPieceLocation = (pieceId: number) => {
-        if (selectedPuzzle?.pool.find((p) => p.id === pieceId)) return { container: "pool" };
-        for (let i = 0; i < total; i++) {
-            const key = `slot-${i}`;
-            if (selectedPuzzle?.boardSlots[key]?.id === pieceId) return { container: key };
-        }
-        return { container: "pool" };
-    };
-    const handleDragEnd = (event: DragEndEvent) => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-
-        const { active, over } = event;
-        if (!over) return;  // Si no hay un destino, no hacer nada.
-
-        const pieceId = Number(active.id);
-        const dropTargetId = over.id as string;
-
-        // Si la pieza se suelta fuera del tablero o pool, no hacer nada
-        if (dropTargetId === "pool" || !dropTargetId.startsWith("slot-")) return;
-
-        // Obtener la pieza que estamos moviendo
-        let movingPiece: PuzzlePieceType | undefined;
-        const location = findPieceLocation(pieceId);
-        if (location.container === "pool") {
-            movingPiece = selectedPuzzle?.pool.find((p) => p.id === pieceId);
-        } else {
-            movingPiece = selectedPuzzle?.boardSlots[location.container] ?? undefined;
-        }
-
-        if (!movingPiece) return;
-
-        // Obtener la pieza en el slot de destino
-        const targetPiece = selectedPuzzle?.boardSlots[dropTargetId];
-        const newBoardSlots = { ...selectedPuzzle!.boardSlots };
-
-        if (targetPiece) {
-            newBoardSlots[dropTargetId] = {
-                ...movingPiece,
-                correctSlot: movingPiece.id === parseInt(dropTargetId.replace('slot-', ''))
-            };
-            const originalSlotId = location.container;
-            if (originalSlotId !== "pool") {
-                newBoardSlots[originalSlotId] = {
-                    ...targetPiece,
-                    correctSlot: targetPiece.id === parseInt(originalSlotId.replace('slot-', ''))
-                };
-            }
-        } else {
-            newBoardSlots[dropTargetId] = {
-                ...movingPiece,
-                correctSlot: movingPiece.id === parseInt(dropTargetId.replace('slot-', ''))
-            };
-        }
-
-        if (location.container !== "pool" && location.container !== dropTargetId && newBoardSlots[location.container]?.id === newBoardSlots[dropTargetId].id) {
-            newBoardSlots[location.container] = null;
-        }
-
-        // Si la pieza estaba en el pool y se movió a un slot, debemos actualizar el pool.
-        let updatedPool = selectedPuzzle!.pool.filter((p) => p.id !== pieceId); // Eliminar la pieza del pool si estaba allí
-
-        if (location.container === "pool" && targetPiece) {
-            updatedPool = [...updatedPool, targetPiece]; // Añadir la pieza de destino si estaba en el pool
-        }
-
-
-
-        // Obtener el elemento del slot donde la pieza fue colocada y ejecutar el confeti
-        const slotElement = document.getElementById(dropTargetId);
-        if (slotElement) {
-            const rect = slotElement.getBoundingClientRect();
-
-            const originX = rect.left + (rect.width * 0.5);  // Centro horizontal
-            const originY = rect.top + (rect.height * 0.5);  // Centro vertical
-            const over_id = dropTargetId.replace("slot-", "");
-            if (Number(over_id) == Number(pieceId)) {
-                const randomMessages = [
-                    "¡Cada paso que das me hace amarte más! 💖",
-                    "¡Lo lograste, mi amor, y yo siempre estaré aquí para celebrarlo contigo! 🎉❤️",
-                    "¡Eres increíble, como un sueño del que nunca quiero despertar! 😍✨",
-                    "¡Sigue brillando, mi corazón late más fuerte por cada logro tuyo! 💓🌟",
-                    "¡Tu esfuerzo me inspira, sigamos construyendo nuestro futuro juntos! 🏡💑",
-                    "¡Eres imparable, y yo soy tu fan número uno! 🏆🥰",
-                    "¡Cada meta que alcanzas hace que nuestro amor brille aún más! 💕🌟",
-                    "¡Tú y tus logros son mi mayor orgullo! 💖👏",
-                    "¡Cada victoria tuya es un beso en mi corazón! 😘💞",
-                    "¡Nada me hace más feliz que verte triunfar, mi amor! 🎊💘",
-                    "¡Tú conquistas todo, incluido mi corazón! 💘🏆",
-                    "¡Sigue adelante, amor mío, juntos llegaremos lejos! 🚀❤️",
-                    "¡Tu determinación me enamora cada día más! 💪💖"
-                ];
-
-                // Seleccionar un mensaje aleatorio
-                const randomMessage = randomMessages[Math.floor(Math.random() * randomMessages.length)];
-
-                // Mostrar la alerta
-                setAlert(randomMessage);
-                shoot(originX, originY);  // Lanzar confeti
-            }
-        }
-        // Actualizamos el contexto global
-        if (selectedPuzzle) {
-            const updatedPuzzle: Puzzle = {
-                ...selectedPuzzle,
-                boardSlots: newBoardSlots,
-                pool: updatedPool,  // Actualizamos el pool también
-            };
-            setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
-            updatePuzzles(selectedPuzzle.id, updatedPuzzle);  // Actualizamos el estado global
-        }
-        setActiveId(null);  // Reseteamos el ID activo
-    };
     const getClue = () => {
         if (!selectedPuzzle || selectedPuzzle.clues === 0) return;
         let updatedPuzzle: Puzzle;
@@ -238,17 +90,10 @@ const PuzzleBoard: React.FC = () => {
         shoot(originX, originY);  // Lanzar confeti
     }
 
-    const handleDragStart = (event: DragStartEvent) => {
-        const { active } = event;
-        if (!active) return;  // Si no hay un destino, no hacer nada.
-
-        const pieceId = Number(event.active.id);
-        const selectedPiece = selectedPuzzle?.boardSlots[`slot-${pieceId}`];
-        setActiveId(pieceId);
-        if (pieceId == selectedPiece?.id) {
-            return;
-        }
-
+    const goBack = () => {
+        navigate("/");
+        launchConfetti(false);
+        setCompleted(false);
     };
 
     useEffect(() => {
@@ -370,49 +215,8 @@ const PuzzleBoard: React.FC = () => {
                     </motion.div>
 
                     <div className="board-container">
-                        <div
-                            className="board-grid"
-                            style={{
-                                display: "grid",
-                                gridTemplateColumns: `repeat(${cols}, 1fr)`,
-                                gridTemplateRows: `repeat(${rows}, 1fr)`,
-                            }}
-                        >
-                            {Array.from({ length: cols * rows }, (_, i) => {
-                                const slotId: string = `slot-${i}`;
+                        <PuzzleGrid cols={cols} rows={rows} selectedPuzzle={selectedPuzzle} />
 
-                                return (
-                                    <motion.div initial="hidden"
-                                        key={slotId}
-                                        animate="visible"
-                                        transition={{
-                                            duration: 0.5, // Duración más corta
-                                            delay: i * 0.02, // Delay ajustado
-                                        }}
-                                        variants={{
-                                            hidden: { opacity: 0, scale: 0.5 },
-                                            visible: { opacity: 1, scale: 1 },
-                                        }}>
-                                        <Slot
-                                            key={slotId}
-                                            id={slotId}
-                                            piece={selectedPuzzle?.boardSlots?.[slotId] ?? undefined} // Corrección aquí
-                                        >
-                                            {selectedPuzzle?.boardSlots?.[slotId] && (
-                                                <PuzzlePiece
-                                                    key={selectedPuzzle.boardSlots[slotId]!.id}
-                                                    piece={selectedPuzzle.boardSlots[slotId]!}
-                                                    id={String(selectedPuzzle.boardSlots[slotId]!.id)}
-                                                    style={{ width: "100%", height: "100%" }}
-                                                />
-                                            )}
-                                        </Slot>
-
-                                    </motion.div>
-
-                                );
-                            })}
-                        </div>
 
                     </div>
                     {matches ? <motion.div className="btn-dev" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} style={{ display: "flex", justifyContent: "center", margin: "1em" }}>

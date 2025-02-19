@@ -5,11 +5,8 @@ import {
 } from "@tsparticles/engine";
 
 const options: ISourceOptions = {
-  key: "fireworks2",
-  name: "Fireworks 2",
-  fullScreen: {
-    enable: true,
-  },
+  key: "sunflowerFireworks",
+  name: "Sunflower Fireworks",
 
   emitters: {
     direction: "top",
@@ -28,12 +25,12 @@ const options: ISourceOptions = {
     },
     position: {
       y: 100,
-      x: 22,
+      x: 50, // Center horizontally
     },
   },
   particles: {
     color: {
-      value: "#fff",
+      value: ["#FFD700", "#FFA500", "#FF8C00", "#8B4513"], // Yellow, orange, and brown for sunflower colors
     },
     number: {
       value: 1,
@@ -56,7 +53,7 @@ const options: ISourceOptions = {
             width: 0,
           },
           color: {
-            value: ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#6a4c93"],
+            value: ["#FFD700", "#FFA500", "#FF8C00", "#8B4513"], // Consistent sunflower colors
           },
           number: {
             value: 0,
@@ -94,12 +91,16 @@ const options: ISourceOptions = {
             },
           },
           shape: {
-            type: "heart",
+            type: "heart", // Use hearts for simplicity (or use a custom sunflower shape if available)
           },
           size: {
-            value: 3,
+            value: 5, // Slightly larger particles
             animation: {
-              enable: false,
+              enable: true,
+              speed: 2,
+              sync: false,
+              startValue: "min",
+              destroy: "max",
             },
           },
           life: {
@@ -107,7 +108,7 @@ const options: ISourceOptions = {
             duration: {
               value: {
                 min: 1,
-                max: 2,
+                max: 3,
               },
             },
           },
@@ -146,10 +147,10 @@ const options: ISourceOptions = {
       },
     },
     shape: {
-      type: "circle",
+      type: "heart", // Use hearts for simplicity (or use a custom sunflower shape if available)
     },
     size: {
-      value: 1,
+      value: 3, // Smaller main particle size
     },
     move: {
       enable: true,
