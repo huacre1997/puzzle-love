@@ -1,6 +1,7 @@
 export interface PuzzlePiece {
   id: number;
   imageData: string;
+  correctSlot: boolean;
 }
 
 export interface BoardSlots {

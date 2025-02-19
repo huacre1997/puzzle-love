@@ -14,6 +14,7 @@ import { puzzleSize } from "../data";
 import { Puzzle } from "../types";
 import AnimatedTitle from "./AnimatedTitle";
 import Alert from "./Alert";
+import { restrictToWindowEdges } from "@dnd-kit/modifiers";
 
 const PuzzleBoard: React.FC = () => {
     const { imageId } = useParams(); // Obtener el ID desde la URL
@@ -76,6 +77,8 @@ const PuzzleBoard: React.FC = () => {
         return { container: "pool" };
     };
     const handleDragEnd = (event: DragEndEvent) => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
         const { active, over } = event;
         if (!over) return;  // Si no hay un destino, no hacer nada.
 
@@ -101,13 +104,22 @@ const PuzzleBoard: React.FC = () => {
         const newBoardSlots = { ...selectedPuzzle!.boardSlots };
 
         if (targetPiece) {
-            newBoardSlots[dropTargetId] = movingPiece;
+            newBoardSlots[dropTargetId] = {
+                ...movingPiece,
+                correctSlot: movingPiece.id === parseInt(dropTargetId.replace('slot-', ''))
+            };
             const originalSlotId = location.container;
             if (originalSlotId !== "pool") {
-                newBoardSlots[originalSlotId] = targetPiece;
+                newBoardSlots[originalSlotId] = {
+                    ...targetPiece,
+                    correctSlot: targetPiece.id === parseInt(originalSlotId.replace('slot-', ''))
+                };
             }
         } else {
-            newBoardSlots[dropTargetId] = movingPiece;
+            newBoardSlots[dropTargetId] = {
+                ...movingPiece,
+                correctSlot: movingPiece.id === parseInt(dropTargetId.replace('slot-', ''))
+            };
         }
 
         if (location.container !== "pool" && location.container !== dropTargetId && newBoardSlots[location.container] === newBoardSlots[dropTargetId]) {
@@ -121,16 +133,7 @@ const PuzzleBoard: React.FC = () => {
             updatedPool = [...updatedPool, targetPiece]; // Añadir la pieza de destino si estaba en el pool
         }
 
-        // Actualizamos el contexto global
-        if (selectedPuzzle) {
-            const updatedPuzzle: Puzzle = {
-                ...selectedPuzzle,
-                boardSlots: newBoardSlots,
-                pool: updatedPool,  // Actualizamos el pool también
-            };
-            setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
-            updatePuzzles(selectedPuzzle.id, updatedPuzzle);  // Actualizamos el estado global
-        }
+
 
         // Obtener el elemento del slot donde la pieza fue colocada y ejecutar el confeti
         const slotElement = document.getElementById(dropTargetId);
@@ -165,19 +168,28 @@ const PuzzleBoard: React.FC = () => {
                 shoot(originX, originY);  // Lanzar confeti
             }
         }
-
+        // Actualizamos el contexto global
+        if (selectedPuzzle) {
+            const updatedPuzzle: Puzzle = {
+                ...selectedPuzzle,
+                boardSlots: newBoardSlots,
+                pool: updatedPool,  // Actualizamos el pool también
+            };
+            setSelectedPuzzle(updatedPuzzle); // Actualizamos el estado local
+            updatePuzzles(selectedPuzzle.id, updatedPuzzle);  // Actualizamos el estado global
+        }
         setActiveId(null);  // Reseteamos el ID activo
     };
     const getClue = () => {
         if (!selectedPuzzle || selectedPuzzle.clues === 0) return;
         let updatedPuzzle: Puzzle;
+        let dropTargetId: string;
 
         const randomPiece = [...selectedPuzzle.pool].sort(() => Math.random() - 0.5).shift();
         if (randomPiece === undefined) {
             const keys = Object.keys(selectedPuzzle.boardSlots);
             let randomKey: string;
             let movingPiece: PuzzlePieceType | null;
-            let dropTargetId: string;
 
             do {
                 randomKey = keys[Math.floor(Math.random() * keys.length)];
@@ -190,25 +202,40 @@ const PuzzleBoard: React.FC = () => {
             const newBoardSlots = { ...selectedPuzzle.boardSlots };
             const targetPiece = newBoardSlots[dropTargetId];
 
-            newBoardSlots[dropTargetId] = movingPiece;
-            newBoardSlots[randomKey] = targetPiece;
+            newBoardSlots[dropTargetId] = { ...movingPiece, correctSlot: movingPiece.id === parseInt(dropTargetId.replace('slot-', '')) };
+            if (targetPiece && targetPiece.id !== undefined) {
+                newBoardSlots[randomKey] = {
+                    ...targetPiece,
+                    correctSlot: targetPiece.id === parseInt(randomKey.replace('slot-', ''))
+                };
+            }
 
             updatedPuzzle = { ...selectedPuzzle, boardSlots: newBoardSlots, clues: selectedPuzzle.clues - 1 };
+
         } else {
             // Movemos la pieza del pool al tablero
-            const dropTargetId = `slot-${randomPiece.id}`;
+            dropTargetId = `slot-${randomPiece.id}`;
             const updatedPool = selectedPuzzle.pool.filter((p) => p.id !== randomPiece.id);
             const newBoardSlots = { ...selectedPuzzle.boardSlots };
 
             if (newBoardSlots[dropTargetId]) {
-                updatedPool.push(newBoardSlots[dropTargetId]); // Devolvemos la pieza previa al pool
+                if (newBoardSlots[dropTargetId]) {
+                    updatedPool.push(newBoardSlots[dropTargetId]!); // Devolvemos la pieza previa al pool
+                }
             }
-            newBoardSlots[dropTargetId] = randomPiece;
-
+            newBoardSlots[dropTargetId] = { ...randomPiece, correctSlot: true };;
             updatedPuzzle = { ...selectedPuzzle, boardSlots: newBoardSlots, pool: updatedPool, clues: selectedPuzzle.clues - 1 };
         }
+
         setSelectedPuzzle(updatedPuzzle);
         updatePuzzles(selectedPuzzle.id, updatedPuzzle);
+        const slotElement = document.getElementById(dropTargetId);
+
+        const rect = slotElement!.getBoundingClientRect();
+
+        const originX = rect.left + (rect.width * 0.5);  // Centro horizontal
+        const originY = rect.top + (rect.height * 0.5);  // Centro vertical
+        shoot(originX, originY);  // Lanzar confeti
     }
 
     const handleDragStart = (event: DragStartEvent) => {
@@ -286,7 +313,7 @@ const PuzzleBoard: React.FC = () => {
 
 
     return (
-        <DndContext onDragStart={handleDragStart} collisionDetection={rectIntersection} onDragEnd={handleDragEnd}>
+        <DndContext onDragStart={handleDragStart} collisionDetection={rectIntersection} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
             {matches && <h1 className="main-title">Arma el rompecabezas mi amorcito</h1>}
             <div className="puzzle-wrapper">
                 <div className="game-container">
@@ -353,6 +380,7 @@ const PuzzleBoard: React.FC = () => {
                         >
                             {Array.from({ length: cols * rows }, (_, i) => {
                                 const slotId: string = `slot-${i}`;
+
                                 return (
                                     <motion.div initial="hidden"
                                         key={slotId}
@@ -365,9 +393,12 @@ const PuzzleBoard: React.FC = () => {
                                             hidden: { opacity: 0, scale: 0.5 },
                                             visible: { opacity: 1, scale: 1 },
                                         }}>
-
-                                        <Slot key={slotId} id={slotId}>
-                                            {selectedPuzzle?.boardSlots[slotId] && (
+                                        <Slot
+                                            key={slotId}
+                                            id={slotId}
+                                            piece={selectedPuzzle?.boardSlots?.[slotId] ?? undefined} // Corrección aquí
+                                        >
+                                            {selectedPuzzle?.boardSlots?.[slotId] && (
                                                 <PuzzlePiece
                                                     key={selectedPuzzle.boardSlots[slotId]!.id}
                                                     piece={selectedPuzzle.boardSlots[slotId]!}
@@ -376,6 +407,7 @@ const PuzzleBoard: React.FC = () => {
                                                 />
                                             )}
                                         </Slot>
+
                                     </motion.div>
 
                                 );
@@ -390,6 +422,8 @@ const PuzzleBoard: React.FC = () => {
                 </div>
 
                 <DragOverlay
+                    modifiers={[restrictToWindowEdges]}
+
                     dropAnimation={{
                         duration: 1,
                         easing: "cubic-bezier(0.18, 0.67, 0.6, 1.22)",

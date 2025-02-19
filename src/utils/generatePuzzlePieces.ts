@@ -59,7 +59,7 @@ export const generatePuzzlePieces = (
 
       // Creamos una pieza con un ID único y los datos de la imagen
       const id = row * cols + col;
-      pieces.push({ id, imageData: dataUrl });
+      pieces.push({ id, imageData: dataUrl, correctSlot: false });
     }
   }
 

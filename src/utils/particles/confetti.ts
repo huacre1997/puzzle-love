@@ -1,15 +1,15 @@
 const defaults = {
-  spread: 360,
-  ticks: 100,
-  gravity: 1,
+  spread: 45,
+  ticks: 11,
+  gravity: 0.5,
   decay: 0.94,
-  startVelocity: 20,
+  startVelocity: 8,
   shapes: ["heart"],
-  colors: ["FFC0CB", "FF69B4", "FF1493", "C71585"],
+  colors: ["#FFDD44", "#FFD700", "#FFC107", "#FFB300", "#FFA000"],
 };
 
 const launchConfetti = (launch: boolean) => {
-  const colors = ["#FF69B4", "#FFC0CB", "#FF1493", "#ffffff"]; // Colores románticos
+  const colors = ["#FFCC00", "#FFD700", "##ffa500", "#6B8E23"];
 
   (function frame() {
     confetti({
@@ -38,8 +38,8 @@ const shoot = (x: number, y: number) => {
   const origin = { x: x / window.innerWidth, y: y / window.innerHeight };
 
   [
-    { particleCount: 50, scalar: 2 },
-    { particleCount: 25, scalar: 3 },
+    { particleCount: 40, scalar: 2 },
+    { particleCount: 20, scalar: 3 },
     { particleCount: 10, scalar: 4 },
   ].forEach(({ particleCount, scalar }) => {
     confetti({
