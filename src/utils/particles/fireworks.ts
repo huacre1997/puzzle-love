@@ -5,8 +5,8 @@ import {
 } from "@tsparticles/engine";
 
 const options: ISourceOptions = {
-  key: "sunflowerFireworks",
-  name: "Sunflower Fireworks",
+  key: "heartFireworks",
+  name: "Heart Fireworks",
 
   emitters: {
     direction: "top",
@@ -30,7 +30,7 @@ const options: ISourceOptions = {
   },
   particles: {
     color: {
-      value: ["#FFD700", "#FFA500", "#FF8C00", "#8B4513"], // Yellow, orange, and brown for sunflower colors
+      value: ["#FFD700", "#FFA500", "#FF8C00", "#ffa500"], // Consistent sunflower colors
     },
     number: {
       value: 1,
@@ -53,7 +53,7 @@ const options: ISourceOptions = {
             width: 0,
           },
           color: {
-            value: ["#FFD700", "#FFA500", "#FF8C00", "#8B4513"], // Consistent sunflower colors
+            value: ["#FFD700", "#FFA500", "#FF8C00", "#ffa500"], // Consistent sunflower colors
           },
           number: {
             value: 0,
@@ -91,10 +91,10 @@ const options: ISourceOptions = {
             },
           },
           shape: {
-            type: "heart", // Use hearts for simplicity (or use a custom sunflower shape if available)
+            type: "heart", // Heart shape for particles
           },
           size: {
-            value: 5, // Slightly larger particles
+            value: 5, // Slightly larger hearts
             animation: {
               enable: true,
               speed: 2,
@@ -108,7 +108,7 @@ const options: ISourceOptions = {
             duration: {
               value: {
                 min: 1,
-                max: 3,
+                max: 2,
               },
             },
           },
@@ -147,7 +147,7 @@ const options: ISourceOptions = {
       },
     },
     shape: {
-      type: "heart", // Use hearts for simplicity (or use a custom sunflower shape if available)
+      type: "heart", // Heart shape for the main particle
     },
     size: {
       value: 3, // Smaller main particle size
