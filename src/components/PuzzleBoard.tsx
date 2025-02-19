@@ -122,7 +122,7 @@ const PuzzleBoard: React.FC = () => {
             };
         }
 
-        if (location.container !== "pool" && location.container !== dropTargetId && newBoardSlots[location.container] === newBoardSlots[dropTargetId]) {
+        if (location.container !== "pool" && location.container !== dropTargetId && newBoardSlots[location.container]?.id === newBoardSlots[dropTargetId].id) {
             newBoardSlots[location.container] = null;
         }
 
