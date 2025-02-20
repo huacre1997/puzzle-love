@@ -162,7 +162,31 @@ const PuzzleBoard: React.FC = () => {
             {matches && <h1 className="main-title">Arma el rompecabezas mi amorcito</h1>}
             <div className="puzzle-wrapper">
                 <div className="game-container">
-                    {matches && <motion.button className="button-clue" onClick={getClue} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}><img src="../clues.png" /><p>Pista</p><p>({selectedPuzzle?.clues} restantes)</p></motion.button>
+                    {matches && <motion.button
+                        className="button-clue"
+                        onClick={getClue}
+                        whileTap={{ scale: 0.9, transition: { duration: 0 } }}
+                        whileHover={{ scale: 1.2, transition: { duration: 0 } }}
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, ease: "easeOut" }}
+                    >
+                        <motion.img
+                            src="../clues.png"
+                            animate={{ rotate: [0, 20, -20, 0] }}
+                            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                        />
+                        <motion.p
+                            initial={{ scale: 0.8 }}
+                            animate={{ scale: 1 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                        >Pista</motion.p>
+                        <motion.p
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 0.2, duration: 0.5 }}
+                        >({selectedPuzzle?.clues} restantes)</motion.p>
+                    </motion.button>
                     }
                     {!matches && (
                         <motion.div
@@ -200,12 +224,28 @@ const PuzzleBoard: React.FC = () => {
                                 className="button-clue"
                                 onClick={getClue}
                                 whileTap={{ scale: 0.9, transition: { duration: 0 } }}
-                                whileHover={{ scale: 1.1, transition: { duration: 0 } }} // Hover instantáneo
+                                whileHover={{ scale: 1.2, transition: { duration: 0 } }}
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.5, ease: "easeOut" }}
                             >
-                                <img src="../clues.png" />
-                                <p>Pista</p>
-                                <p>({selectedPuzzle?.clues} restantes)</p>
+                                <motion.img
+                                    src="../clues.png"
+                                    animate={{ rotate: [0, 20, -20, 0] }}
+                                    transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                                />
+                                <motion.p
+                                    initial={{ scale: 0.8 }}
+                                    animate={{ scale: 1 }}
+                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                >Pista</motion.p>
+                                <motion.p
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    transition={{ delay: 0.2, duration: 0.5 }}
+                                >({selectedPuzzle?.clues} restantes)</motion.p>
                             </motion.button>
+
                         )}
                         {matches ? <></> : <> <div style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
                             <motion.button whileTap={{ scale: 0.9, transition: { duration: 0 } }}

@@ -17,6 +17,8 @@ const App: React.FC = () => {
         }).then(() => {
             console.log("Motor de partículas inicializado");
         });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
     }, []);
 
 
