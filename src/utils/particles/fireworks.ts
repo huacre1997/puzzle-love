@@ -5,8 +5,11 @@ import {
 } from "@tsparticles/engine";
 
 const options: ISourceOptions = {
-  key: "heartFireworks",
-  name: "Heart Fireworks",
+  key: "fireworks2",
+  name: "Fireworks 2",
+  fullScreen: {
+    enable: true,
+  },
 
   emitters: {
     direction: "top",
@@ -25,12 +28,12 @@ const options: ISourceOptions = {
     },
     position: {
       y: 100,
-      x: 50, // Center horizontally
+      x: 22,
     },
   },
   particles: {
     color: {
-      value: ["#FFD700", "#FFA500", "#FF8C00", "#ffa500"], // Consistent sunflower colors
+      value: "#fff",
     },
     number: {
       value: 1,
@@ -53,7 +56,7 @@ const options: ISourceOptions = {
             width: 0,
           },
           color: {
-            value: ["#FFD700", "#FFA500", "#FF8C00", "#ffa500"], // Consistent sunflower colors
+            value: ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#6a4c93"],
           },
           number: {
             value: 0,
@@ -91,16 +94,12 @@ const options: ISourceOptions = {
             },
           },
           shape: {
-            type: "heart", // Heart shape for particles
+            type: "heart",
           },
           size: {
-            value: 5, // Slightly larger hearts
+            value: 3,
             animation: {
-              enable: true,
-              speed: 2,
-              sync: false,
-              startValue: "min",
-              destroy: "max",
+              enable: false,
             },
           },
           life: {
@@ -147,10 +146,10 @@ const options: ISourceOptions = {
       },
     },
     shape: {
-      type: "heart", // Heart shape for the main particle
+      type: "circle",
     },
     size: {
-      value: 3, // Smaller main particle size
+      value: 1,
     },
     move: {
       enable: true,
