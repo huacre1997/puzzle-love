@@ -199,11 +199,7 @@ const PuzzleBoard: React.FC = () => {
                                 <div className="sized">
                                     <AnimatedTitle />
                                 </div>
-                                <img
-                                    src="/destello.png"
-                                    alt=""
-                                    className="destello"
-                                />
+
                             </div>
                         </motion.div>
                     )}
