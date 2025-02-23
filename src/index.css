@@ -224,126 +224,7 @@ h1 {
   position: relative;
 }
 /* Responsiveness */
-@media (max-width: 768px) {
-  body,
-  html,
-  #root {
-  }
-  .piece-stack {
-    width: 100px; /* Mayor tamaño para las piezas */
-    height: 100px;
-  }
-  .app-container {
-    padding: 0;
-    align-content: center;
-    height: auto;
-  }
-  .game-container {
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 0.5fr 1.5fr 0.3fr;
-    padding: 10px;
-    margin: 0 10px;
-    gap: 5px;
-  }
-  .board-container {
-    grid-column: 1/2;
-  }
-  .btn-dev {
-    grid-column: 1/4;
-  }
-  .original-image {
-    max-width: 90%; /* Hacemos la imagen más pequeña en dispositivos pequeños */
-  }
-  .original-image-container {
-    grid-column: 2/4;
-    padding: 0;
-    height: 150px;
-    align-self: center;
-  }
-  .pool-container {
-    align-self: center;
-    grid-column: 1 / 2;
-  }
 
-  .puzzle-board-wrapper {
-    grid-column: 1 / 2; /* El tablero de puzzle ocupa la fila completa */
-  }
-  .puzzle-wrapper {
-    padding: 0 10px;
-    justify-content: start;
-  }
-  .app-title {
-    font-size: 2.5rem; /* Reducimos el tamaño del título */
-    margin-bottom: 15px;
-  }
-
-  .original-title {
-    font-size: 18px; /* Reducimos el tamaño del subtítulo */
-  }
-
-  .original-image {
-    width: 70%; /* Hacemos la imagen más pequeña en pantallas pequeñas */
-  }
-
-  .board-container {
-    width: 100%;
-    padding: 15px;
-    grid-column: 1/4;
-  }
-
-  .board-grid {
-    gap: 1px;
-    width: 80%;
-  }
-  .back-button {
-    width: 100%;
-  }
-  .image-selector {
-    padding: 30px !important;
-    max-width: 380px !important;
-    max-height: 900px !important;
-  }
-  .main-title {
-    padding: 0.5em;
-    font-size: 1.3em;
-  }
-  .sub-title {
-    margin-top: 0;
-    font-size: 1.1rem;
-  }
-  .puzzle-container {
-    padding: 20px;
-  }
-
-  .main-title-puzzle {
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-
-    font-size: 1.2em;
-    font-weight: bold;
-    padding: 10px;
-  }
-  .overlay h1 {
-    font-size: 2em; /* Aumentamos el tamaño del título */
-    margin-bottom: 20px;
-  }
-  .overlay p {
-    width: 100%;
-    font-size: 1em;
-    max-width: 80%;
-  }
-  .overlay-sub {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .button-clue {
-    height: 160px;
-    padding: 0 !important;
-  }
-  .button-clue img {
-    width: 100%;
-  }
-}
 button {
   font-family: "Cinzel", serif;
 }
@@ -491,7 +372,7 @@ h2 {
   text-align: center;
 }
 .button-clue img {
-  width: 50%;
+  width: 100%;
 }
 .button-clue p {
   font-size: 0.8em;
@@ -695,4 +576,127 @@ h2 {
 .icon-btn {
   width: 20px;
   height: 20px;
+}
+@media (max-width: 768px) {
+  body,
+  html,
+  #root {
+  }
+  .piece-stack {
+    width: 100px; /* Mayor tamaño para las piezas */
+    height: 100px;
+  }
+  .app-container {
+    padding: 0;
+    align-content: center;
+    height: auto;
+  }
+  .game-container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 0.5fr 1.5fr 0.3fr;
+    padding: 10px;
+    margin: 0 10px;
+    gap: 5px;
+  }
+  .board-container {
+    grid-column: 1/2;
+  }
+  .btn-dev {
+    grid-column: 1/4;
+  }
+  .original-image {
+    max-width: 90%; /* Hacemos la imagen más pequeña en dispositivos pequeños */
+  }
+  .original-image-container {
+    grid-column: 2/4;
+    padding: 0;
+    height: 150px;
+    align-self: center;
+  }
+  .pool-container {
+    align-self: center;
+    grid-column: 1 / 2;
+  }
+
+  .puzzle-board-wrapper {
+    grid-column: 1 / 2; /* El tablero de puzzle ocupa la fila completa */
+  }
+  .puzzle-wrapper {
+    padding: 0 10px;
+    justify-content: start;
+  }
+  .app-title {
+    font-size: 2.5rem; /* Reducimos el tamaño del título */
+    margin-bottom: 15px;
+  }
+
+  .original-title {
+    font-size: 18px; /* Reducimos el tamaño del subtítulo */
+  }
+
+  .original-image {
+    width: 70%; /* Hacemos la imagen más pequeña en pantallas pequeñas */
+  }
+
+  .board-container {
+    width: 100%;
+    padding: 15px;
+    grid-column: 1/4;
+  }
+
+  .board-grid {
+    gap: 1px;
+    width: 80%;
+  }
+  .back-button {
+    width: 100%;
+  }
+  .image-selector {
+    padding: 30px !important;
+    max-width: 380px !important;
+    max-height: 900px !important;
+  }
+  .main-title {
+    padding: 0.5em;
+    font-size: 1.3em;
+  }
+  .sub-title {
+    margin-top: 0;
+    font-size: 1.1rem;
+  }
+  .puzzle-container {
+    padding: 20px;
+  }
+
+  .main-title-puzzle {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px;
+  }
+  .overlay h1 {
+    font-size: 2em; /* Aumentamos el tamaño del título */
+    margin-bottom: 20px;
+  }
+  .overlay p {
+    width: 100%;
+    font-size: 1em;
+    max-width: 80%;
+  }
+  .overlay-sub {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .button-clue {
+    height: 160px;
+    padding: 0 !important;
+  }
+  .button-clue img {
+    width: 50%;
+  }
+  .fixed-button {
+    padding: 0.5em;
+  }
 }

@@ -170,6 +170,9 @@ const PuzzleBoard: React.FC = () => {
                         initial={{ opacity: 0, y: -10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.5, ease: "easeOut" }}
+                        style={{
+                            background: themeConfig[theme].gradient,
+                        }}
                     >
                         <motion.img
                             src="../clues.png"
@@ -180,6 +183,7 @@ const PuzzleBoard: React.FC = () => {
                             initial={{ scale: 0.8 }}
                             animate={{ scale: 1 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
+
                         >Pista</motion.p>
                         <motion.p
                             initial={{ opacity: 0 }}
@@ -261,7 +265,11 @@ const PuzzleBoard: React.FC = () => {
 
                     </div>
                     {matches ? <motion.div className="btn-dev" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }} style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
-                        <button className="back-button" onClick={() => navigate("/")}>⬅ Volver</button>
+                        <button
+                            style={{
+                                background: themeConfig[theme].gradient,
+                            }}
+                            className="back-button" onClick={() => navigate("/")}>⬅ Volver</button>
                     </motion.div> : <> </>}
 
                 </div>
@@ -356,6 +364,7 @@ const PuzzleBoard: React.FC = () => {
                             boxShadow: `0px 2px 6px ${themeConfig[theme].boxShadow}`, // Simula presión
                         }}
                     >
+
                         Regresar
                     </motion.button>
 
