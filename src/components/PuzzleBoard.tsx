@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { DndContext, rectIntersection, DragOverlay } from "@dnd-kit/core";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { generatePuzzlePieces } from "../utils/generatePuzzlePieces";
 import Pool from "./Pool";
 import { PuzzlePiece as PuzzlePieceType } from "../types";
 import { useMediaQuery } from "usehooks-ts";
-import { shoot } from "../utils/particles/confetti";
 import { useStateContext } from "../context/StateContext";
-import { puzzleSize } from "../data";
+import { puzzleSize, themeConfig } from "../data";
 import { Puzzle } from "../types";
 import AnimatedTitle from "./AnimatedTitle";
 import Alert from "./Alert";
@@ -17,17 +16,18 @@ import { useDragAndDrop } from "../hooks/useDragAndDrop";
 import { usePuzzleInitialization } from "../hooks/usePuzzleInitiation";
 import { useConfetti } from "../hooks/useConfetti";
 import PuzzleGrid from "./PuzzleGrid";
+import Overlay from "./Overlay";
 
 const PuzzleBoard: React.FC = () => {
     const { imageId } = useParams(); // Obtener el ID desde la URL
 
     const matches = useMediaQuery("(max-width: 768px)");
     const navigate = useNavigate();
-    const { selectedPuzzle, updatePuzzles, setSelectedPuzzle, puzzles } = useStateContext();
+    const { selectedPuzzle, updatePuzzles, setSelectedPuzzle, puzzles, theme } = useStateContext();
     const { rows, cols, total } = puzzleSize.find((puzzle) => puzzle.id === imageId)!;
     const [completed, setCompleted] = useState(false)
     const [alert, setAlert] = useState<string>("");
-    const { launchConfetti } = useConfetti();
+    const { launchConfetti, shoot } = useConfetti();
     const { activeId, handleDragEnd, handleDragStart } = useDragAndDrop(selectedPuzzle, setSelectedPuzzle, updatePuzzles, total, setAlert);
     usePuzzleInitialization(selectedPuzzle, setSelectedPuzzle, updatePuzzles, cols, rows);
 
@@ -228,6 +228,9 @@ const PuzzleBoard: React.FC = () => {
                                 initial={{ opacity: 0, y: -10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5, ease: "easeOut" }}
+                                style={{
+                                    background: themeConfig[theme].gradient,
+                                }}
                             >
                                 <motion.img
                                     src="../clues.png"
@@ -248,7 +251,9 @@ const PuzzleBoard: React.FC = () => {
 
                         )}
                         {matches ? <></> : <> <div style={{ display: "flex", justifyContent: "center", margin: "1em" }}>
-                            <motion.button whileTap={{ scale: 0.9, transition: { duration: 0 } }}
+                            <motion.button whileTap={{ scale: 0.9, transition: { duration: 0 } }} style={{
+                                background: themeConfig[theme].gradient,
+                            }}
                                 whileHover={{ scale: 1.1, transition: { duration: 0.2 } }} className="back-button" onClick={() => navigate("/")}>⬅ Volver</motion.button>
                         </div></>}
 
@@ -298,73 +303,67 @@ const PuzzleBoard: React.FC = () => {
                     })()}
                 </DragOverlay>
 
-                <AnimatePresence>
-                    {completed && (
-                        <motion.div
-                            className="overlay"
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
-                            transition={{ duration: 0.5 }}
-                        >
-                            <motion.div className="overlay-image" initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }} // Efecto de latido
-                                transition={{ duration: 1, ease: "easeInOut" }}>
-                                <img className="" src={selectedPuzzle?.src} alt={selectedPuzzle?.title}
-                                />
-                            </motion.div>
+                <Overlay isVisible={completed} onClose={goBack} hasCloseButton={false}>
+                    <motion.div className="overlay-image" initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }} // Efecto de latido
+                        transition={{ duration: 1, ease: "easeInOut" }}>
+                        <img className="" src={selectedPuzzle?.src} alt={selectedPuzzle?.title}
+                        />
+                    </motion.div>
 
-                            {/* Imagen del corazón con animación de latido infinito */}
-                            <motion.img
-                                src="/heart.png" // Asegúrate de que la imagen esté en la ruta correcta
-                                alt="Corazón latiendo"
-                                style={{ width: "50px", height: "50px", margin: "0 auto" }}
-                                initial={{ scale: 1 }}
-                                animate={{ scale: [1, 1.2, 1] }} // Efecto de latido
-                                transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
-                            />
+                    {/* Imagen del corazón con animación de latido infinito */}
+                    <motion.img
+                        src="/heart.png" // Asegúrate de que la imagen esté en la ruta correcta
+                        alt="Corazón latiendo"
+                        style={{ width: "50px", height: "50px", margin: "0 auto" }}
+                        initial={{ scale: 1 }}
+                        animate={{ scale: [1, 1.2, 1] }} // Efecto de latido
+                        transition={{ repeat: Infinity, duration: 0.6, ease: "easeInOut" }}
+                    />
 
-                            <motion.h1
-                                initial={{ y: -20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ duration: 2 }}
-                            >
-                                ¡Amor, lo armaste!
-                            </motion.h1>
+                    <motion.h1
+                        style={{ color: themeConfig[theme].color }}
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 2 }}
 
-                            <motion.div initial={{ y: -20, opacity: 0 }}
-                                animate={{ y: 0, opacity: 1 }}
-                                transition={{ duration: 2 }} className="overlay-sub">
-                                <p>{selectedPuzzle?.message}</p>
+                    >
+                        ¡Amor, lo armaste!
+                    </motion.h1>
 
-                            </motion.div>
-                            <motion.button
-                                onClick={goBack}
-                                className="back-button"
-                                initial={{ y: 30, opacity: 0, scale: 0.9 }}
-                                animate={{ y: 0, opacity: 1, scale: 1 }}
-                                transition={{
-                                    duration: 0.6,
-                                    ease: "easeOut",
-                                    type: "spring",
-                                    stiffness: 120,
-                                }}
-                                whileHover={{
-                                    scale: 1.12,
-                                    boxShadow: "0px 6px 15px rgba(255, 152, 0, 0.4)", // Efecto de elevación
-                                }}
-                                whileTap={{
-                                    scale: 0.95,
-                                    boxShadow: "0px 2px 6px rgba(255, 152, 0, 0.3)", // Simula presión
-                                }}
-                            >
-                                Regresar
-                            </motion.button>
+                    <motion.div initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ duration: 2 }} className="overlay-sub">
+                        <p>{selectedPuzzle?.message}</p>
 
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                    </motion.div>
+                    <motion.button
+                        onClick={goBack}
+                        className="back-button"
+                        initial={{ y: 30, opacity: 0, scale: 0.9 }}
+                        animate={{ y: 0, opacity: 1, scale: 1 }}
+                        style={{
+                            background: themeConfig[theme].gradient
+                        }}
+                        transition={{
+                            duration: 0.6,
+                            ease: "easeOut",
+                            type: "spring",
+                            stiffness: 120,
+                        }}
+                        whileHover={{
+                            scale: 1.12,
+                            boxShadow: `0px 6px 15px ${themeConfig[theme].boxShadow}`, // Simula presión
+                        }}
+                        whileTap={{
+                            scale: 0.95,
+                            boxShadow: `0px 2px 6px ${themeConfig[theme].boxShadow}`, // Simula presión
+                        }}
+                    >
+                        Regresar
+                    </motion.button>
 
+                </Overlay>
 
             </div>
             <div style={{ position: 'fixed', top: '0', width: '100%', padding: '20px', display: 'flex', justifyContent: 'center' }}>

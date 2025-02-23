@@ -1,5 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import { useStateContext } from '../context/StateContext';
+import { themeConfig } from '../data';
 
 interface AlertProps {
     message: string;
@@ -8,6 +10,7 @@ interface AlertProps {
 
 const Alert: React.FC<AlertProps> = ({ message }) => {
     const [visible, setVisible] = useState(false);
+    const { theme } = useStateContext();
 
     useEffect(() => {
         if (message) {
@@ -29,6 +32,9 @@ const Alert: React.FC<AlertProps> = ({ message }) => {
                     exit={{ opacity: 0, y: 50 }}
                     transition={{ duration: 0.5 }}
                     className="alert"
+                    style={{
+                        background: themeConfig[theme].gradient,
+                    }}
                 >
                     <span>{message}</span>
                 </motion.div>

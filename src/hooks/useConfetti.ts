@@ -1,9 +1,11 @@
 // useConfetti.ts
 import { useRef } from "react";
+import { themeConfig } from "../data";
+import { useStateContext } from "../context/StateContext";
 
 export const useConfetti = () => {
   const confettiFrameRef = useRef<number | null>(null);
-
+  const { theme } = useStateContext();
   const launchConfetti = (launch: boolean) => {
     const colors = ["#FF69B4", "#FFC0CB", "#FF1493", "#ffffff"];
 
@@ -40,7 +42,7 @@ export const useConfetti = () => {
     decay: 0.94,
     startVelocity: 8,
     shapes: ["heart"],
-    colors: ["#FFDD44", "#FFD700", "#FFC107", "#FFB300", "#FFA000"],
+    colors: themeConfig[theme].fireworks,
   };
   const shoot = (x: number, y: number) => {
     const origin = { x: x / window.innerWidth, y: y / window.innerHeight };

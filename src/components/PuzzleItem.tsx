@@ -1,15 +1,16 @@
 import { motion } from "framer-motion";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
-import { puzzleSize } from "../data";
+import { puzzleSize, themeConfig } from "../data";
 import { Puzzle } from "../types";
 import React from "react";
+import { useStateContext } from "../context/StateContext";
 
 const PuzzleItem: React.FC<{
     puzzle: Puzzle;
     onClick: (puzzle: Puzzle) => void;
 }> = ({ puzzle, onClick }) => {
     const totalPieces = puzzleSize.find((size) => size.id === puzzle.id)?.total || "N/A";
-
+    const { theme } = useStateContext();
     return (
         <div
             className="puzzle-container"
@@ -26,7 +27,7 @@ const PuzzleItem: React.FC<{
                 onClick={() => onClick(puzzle)}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                style={{ position: "relative" }}
+                style={{ position: "relative", border: puzzle.completed ? `3px solid ${themeConfig[theme].color}` : "" }}
             >
                 <div className="image-thumbnail-wrapper" style={{ position: "relative" }}>
                     <img
