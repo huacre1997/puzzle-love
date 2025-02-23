@@ -34,7 +34,7 @@ const App: React.FC = () => {
                     <Particles id="tsparticles" options={options} />,
                     document.getElementById("particles-container") as HTMLElement
                 )}
-            <Router>
+            <Router basename="/">
                 <motion.div
                     className="background"
                     initial={{ opacity: 0, scale: 1.2 }} // 🔹 Aparece con zoom más grande
