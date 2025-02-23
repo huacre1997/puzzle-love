@@ -434,7 +434,7 @@ h2 {
 }
 .fixed-button {
   cursor: pointer;
-  position: fixed;
+  position: absolute;
   border: 1px transparent solid;
   bottom: 0;
   right: 0;
