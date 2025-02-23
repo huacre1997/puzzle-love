@@ -159,7 +159,10 @@ const PuzzleBoard: React.FC = () => {
 
     return (
         <DndContext onDragStart={handleDragStart} collisionDetection={rectIntersection} onDragEnd={handleDragEnd} modifiers={[restrictToWindowEdges]}>
-            {matches && <h1 className="main-title">Arma el rompecabezas mi amorcito</h1>}
+            {matches && <h1 className="main-title" style={{
+                color: "white",
+                textShadow: "-1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black"
+            }}>Arma el rompecabezas mi amorcito</h1>}
             <div className="puzzle-wrapper">
                 <div className="game-container">
                     {matches && <motion.button
